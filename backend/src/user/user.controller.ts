@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import { CreateUserDTO } from '../dto/create-user.dto';
+import { CreateUserDTO } from './create-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -23,18 +23,18 @@ export class UserController {
 
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User | null> {
-    return this.userService.findOne(+id);
+    return this.userService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addUser(@Body() user: CreateUserDTO): Promise<void> {
+  async addUser(@Body() user: CreateUserDTO): Promise<User> {
     return this.userService.add(user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeUser(@Param('id') id: string): Promise<void> {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }

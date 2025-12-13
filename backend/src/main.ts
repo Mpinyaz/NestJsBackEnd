@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { AllConfigType } from './config/config.type';
 async function bootstrap() {
@@ -13,7 +13,7 @@ async function bootstrap() {
   app.setGlobalPrefix(apiPrefix);
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: `v${apiVersion}`,
+    defaultVersion: `${apiVersion}`,
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -22,6 +22,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
   await app.listen(config.getOrThrow('app.port', { infer: true }));
 }
 void bootstrap();
